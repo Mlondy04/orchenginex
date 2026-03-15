@@ -21,7 +21,11 @@
 
 ## What is OrchEngineX?
 
-OrchEngineX is a **Distributed Systems & Infrastructure Research Laboratory** focused on structural fragility modeling. It provides a simulation platform for engineers to model distributed architectures as directed weighted failure graphs (DWFGs) and quantify cascading failure risk through composable simulation engines.
+OrchEngineX is an infrastructure simulation engine that helps engineers understand how failures propagate through distributed systems.
+
+Instead of looking at services in isolation, OrchEngineX models your architecture as a dependency graph and simulates how latency, packet loss, or service failures ripple across the system.
+
+This makes it possible to identify hidden reliability risks — such as cascading failures and critical bottlenecks — before they appear in production.
 
 **The core thesis:** Most production outages aren't caused by hardware failures — they're caused by structural coordination problems that are invisible to monitoring dashboards. OrchEngineX makes those structural risks visible and quantifiable before they reach production.
 
@@ -30,13 +34,13 @@ OrchEngineX is a **Distributed Systems & Infrastructure Research Laboratory** fo
 | Capability | Description |
 |---|---|
 | **Architecture Builder** | Visual DWFG editor with 22 node types across 7 infrastructure layers |
-| **Fragility Scoring** | Composite risk model (0–100) combining topology, mechanics, and data plane analysis |
-| **Simulation Engine** | Node removal, cascade propagation, retry storm, and partition sensitivity modeling |
-| **System Mechanics** | 6-engine analysis: compute, consistency, replication, transactions, distribution, flow control |
+| **Fragility Scoring**    | Composite risk model (0–100) combining topology, mechanics, and data plane analysis |
+| **Simulation Engine**    | Node removal, cascade propagation, retry storm, and partition sensitivity modeling |
+| **System Mechanics**     | 6-engine analysis: compute, consistency, replication, transactions, distribution, flow control |
 | **Data Plane Simulator** | Consistency/replication/sharding/transaction impact modeling |
 | **Growth Mode Analysis** | Scaling efficiency prediction with coordination overhead estimation |
 | **Failure Case Studies** | Reproducible research on pool saturation cascades, queue collapse, and more |
-| **CLI Tooling** | Full command-line interface for automation, CI/CD integration, and batch analysis |
+| **CLI Tooling**          | Full command-line interface for automation, CI/CD integration, and batch analysis |
 
 ---
 
@@ -399,77 +403,34 @@ Each publication includes interactive simulations, architecture graphs, and expo
 ## Project Structure
 
 ```
-orchenginex/
-├── public/                          # Static assets
-│   ├── favicon.png                  # Circuit-style favicon
-│   └── robots.txt
-├── src/
-│   ├── components/
-│   │   ├── architecture/            # Architecture Builder & analysis
-│   │   │   ├── ArchitectureBuilder.tsx
-│   │   │   ├── ArchitectureGraphView.tsx
-│   │   │   ├── ArchitectureMechanicsPanel.tsx
-│   │   │   ├── FragilityTrendChart.tsx
-│   │   │   ├── GrowthModePanel.tsx
-│   │   │   ├── SimulationPanel.tsx
-│   │   │   └── StructuralAnalysis.tsx
-│   │   ├── mechanics/               # System mechanics engines
-│   │   │   ├── computeMechanics.ts
-│   │   │   ├── computeNodeHealth.ts
-│   │   │   ├── deriveFromArchitecture.ts
-│   │   │   └── MechanicsSimulator.tsx
-│   │   ├── dataplane/               # Data plane simulator
-│   │   │   ├── DataPlaneSimulator.tsx
-│   │   │   └── computeImpact.ts
-│   │   ├── pool-saturation/         # Pool saturation case study
-│   │   ├── queue-collapse/          # Queue collapse case study
-│   │   └── docs/                    # Documentation components
-│   ├── types/
-│   │   └── architecture.ts          # Core type definitions (DWFG)
-│   ├── utils/
-│   │   ├── graphAnalysis.ts         # Structural metrics & risk computation
-│   │   ├── importArchitectureValidator.ts
-│   │   ├── exportGraphImage.ts
-│   │   └── exportGraphVideo.ts
-│   ├── hooks/
-│   │   ├── useArchitecturePersistence.ts
-│   │   ├── useFragilityTracking.ts
-│   │   └── useSavedSimulations.ts
-│   ├── pages/
-│   │   ├── Index.tsx                # Landing page
-│   │   ├── Simulations.tsx          # Architecture Builder + Simulations
-│   │   ├── Publications.tsx         # Research publications
-│   │   ├── Docs.tsx                 # Technical documentation hub
-│   │   ├── FailureAnalyses.tsx      # Failure case studies index
-│   │   ├── Methodology.tsx          # Methodology & formulas
-│   │   └── Performance.tsx          # Performance analysis
-│   └── data/
-│       └── publications.tsx         # Publication content & metadata
-├── supabase/
-│   └── functions/                   # Backend edge functions
-│       ├── data-api/                # Architecture CRUD, fragility API
-│       ├── simulate/                # Simulation engine API
-│       ├── visualize/               # SVG/PNG/HTML generation
-│       ├── experiments/             # Matrix sweep experiments
-│       ├── cli-auth/                # CLI authentication flow
-│       └── health-monitor/          # Health check endpoint
-├── docs/                            # Extended documentation
+orchenginex
+│   CHANGELOG.md
+│   CONTRIBUTING.md
+│   LICENSE
+│   README.md
+│
+├── cli
+│   └── cli-reference.md
+│
+├── docs
 │   ├── architecture-modeling.md
-│   ├── fragility-scoring.md
-│   ├── simulation-engine.md
-│   ├── system-mechanics.md
 │   ├── data-plane.md
-│   ├── cli-reference.md
-│   └── methodology.md
-├── examples/                        # Importable architecture JSON files
-│   ├── microservices-basic.json
+│   ├── fragility-scoring.md
+│   ├── methodology.md
+│   ├── simulation-engine.md
+│   └── system-mechanics.md
+│
+├── examples
 │   ├── event-driven-pipeline.json
-│   ├── multi-region-ha.json
-│   └── full-stack-hft.json
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-├── LICENSE
-└── README.md
+│   ├── full-stack-hft.json
+│   ├── microservices-basic.json
+│   └── multi-region-ha.json
+│
+└── .github
+    ├── pull_request_template.md
+    └── ISSUE_TEMPLATE
+        ├── bug_report.md
+        └── feature_request.md
 ```
 
 ---
@@ -507,23 +468,6 @@ npm install
 
 # Start development server
 npm run dev
-```
-
-### Environment Variables
-
-| Variable | Description |
-|---|---|
-| `VITE_SUPABASE_URL` | Backend API URL |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Public API key |
-
-### Testing
-
-```bash
-# Run unit tests
-npm test
-
-# Run edge function tests
-npx supabase functions test simulate
 ```
 
 ---
